@@ -1,11 +1,7 @@
 from time import sleep
-
 from station import StationSimulator
-
 from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM
-
-from random import *
-
+import random
 import json
 
 if __name__ == "__main__":
@@ -41,7 +37,7 @@ def udp_client(data):
     data_encoded = data.encode()
     sock.sendto(data_encoded, (address, port))
 
-    while (true):
+    while (True):
         # Sleep for 5 second to wait for new weather data
         # to be simulated
         sleep(5)
