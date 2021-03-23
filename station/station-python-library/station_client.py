@@ -20,7 +20,7 @@ if __name__ == "__main__":
     address_fam = AF_INET
     address = "localhost"
     port = 5555
-    rand = random.randint(0,1)
+    rand = random.randint(0, 1)
 
 
 def tcp_client(data):
@@ -41,19 +41,19 @@ def udp_client(data):
     data_encoded = data.encode()
     sock.sendto(data_encoded, (address, port))
 
-
     while (true):
         # Sleep for 5 second to wait for new weather data
         # to be simulated
         sleep(5)
-        #Read new weather data 
+        # Read new weather data
         temperature = bergen_station.temperature
         precipitation = bergen_station.rain
 
-        #Package data as json_string
-        latest_data = json.dumps({"temprature" : temprature, "precipitation" : precipitation, "location" : location})
+        # Package data as json_string
+        latest_data = json.dumps(
+            {"temperature": temperature, "precipitation": precipitation, "location": location})
 
-        if (rand): #Randomly decide tcp or upd client
+        if (rand):  # Randomly decide tcp or upd client
             tcp_client(latest_data)
         else:
             udp_client(latest_data)
