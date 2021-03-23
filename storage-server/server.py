@@ -1,4 +1,4 @@
-# TODO: import mongoLibrary from mongodb
+from pymongo import mongoLibrary,MongoClient
 from selectors import DefaultSelector, EVENT_READ
 from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM
 import sys
@@ -42,7 +42,7 @@ class Server:
             conn,_ = sock.accept()
             conn.setBlocking(False)
             data = conn.recv(self._BUFFER_SIZE)
-            ## For debugging
+            ## For debugging purposes,
             conn.sendall("TCP data recived")
         else:
             data, _ = sock.recv(self._BUFFER_SIZE)
@@ -55,8 +55,22 @@ class Server:
             self._sel.unregister(sock)
             conn.close()
 
+    # Connect 
     def postToDB(self, data):
-        print("posting to DB")
+        # Connecting to MongoDB
+        client = MongoClient(port=27017)
+        db = client.weather
+        # Creating sample from given data
+        for x in data:
+            report = {
+                'rain': x['rain'],
+                'temperature': x['temperature'],
+                'day': x['day'],
+            }
+            ## Insert report into db
+            result = db.reviews.insert_one(report)
+
+        print("finished posting to MongoDB")
     
 
 if __name__ == "__main__":

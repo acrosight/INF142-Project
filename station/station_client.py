@@ -4,6 +4,7 @@ from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM
 import random
 import json
 
+
 if __name__ == "__main__":
 
     # Instantiate a station simulator
