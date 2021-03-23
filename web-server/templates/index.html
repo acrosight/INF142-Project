@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather monitor</title>
+  </head>
+  <body>
+    <h1>Our weather station monitor</h1>
+    <button>Get data</button>
+    <!-- TODO: Click on a tableRow and open a nice little graph using https://www.chartjs.org/  -->
+    <table>
+      <thead>
+        <th>Location</th>
+        <th>Month</th>
+        <th>Avg high temp</th>
+        <th>Avg low temp</th>
+        <th>Avg Precipitation</th>
+        <th>Avg Precipitation Days</th>
+        <th>Simulation Interval</th>
+      </thead>
+      <tbody>
+        {% for weather_measurement in weather_data %}
+        <tr>
+          <td>{{weather_measurement['location']}}</td>
+          <td>{{weather_measurement['month']}}</td>
+          <td>{{weather_measurement['avg_high_temp']}}</td>
+          <td>{{weather_measurement['avg_low_temp']}}</td>
+          <td>{{weather_measurement['avg_precipitation']}}</td>
+          <td>{{weather_measurement['avg_precipitation_days']}}</td>
+          <td>{{weather_measurement['simulation_interval']}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <script>
+      // On get data click
+      // TODO: GET data from rest api
+    </script>
+  </body>
+</html>

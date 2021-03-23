@@ -1,12 +1,14 @@
-# TODO: Import MongoDB
-from flask import Flask
+from flask import Flask, render_template
+from util import dummy_data
+
 app = Flask(__name__)
 
 @app.route('/')
-def hello_world():
-    return 'Hello, World!'
+def home_page():
+    return render_template('index.html', weather_data=dummy_data)
+
+if __name__ == '__main__':
+   app.run()
 
 
-# TODO: Serve static files from frontend folder
-
-# TODO: Add API endpoint for serving weather data from mongodb.
+    
