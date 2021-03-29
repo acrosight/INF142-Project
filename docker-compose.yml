@@ -34,7 +34,6 @@ services:
       MONGODB_HOSTNAME: mongodb
     depends_on:
       - mongo
-      - mongo-express
 
   # TODO: Add storage server instantiation
   # TODO: Add station instantiation
