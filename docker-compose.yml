@@ -31,7 +31,7 @@ services:
       MONGODB_DATABASE: weatherstation
       MONGODB_USERNAME: root
       MONGODB_PASSWORD: example
-      MONGODB_HOSTNAME: mongodb
+      MONGODB_HOSTNAME: mongo
     depends_on:
       - mongo
 
