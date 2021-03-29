@@ -1,35 +1,24 @@
+import os
+
 from flask import Flask, render_template
-from flask_mongoengine import MongoEngine
+from flask_pymongo import PyMongo
 
 from util import dummy_data
 
 app = Flask(__name__)
-app.config['MONGODB_SETTINGS'] = {
-    'db': 'weatherstation',
-    'host': 'localhost',
-    'port': 27017
-}
 
-db = MongoEngine()
-db.init_app(app)
+# Retrieves the variables necessary to assemble the MONGO URI
+MONGODB_USERNAME = os.environ.get('MONGODB_USERNAME')
+MONGODB_PASSWORD = os.environ.get('MONGODB_PASSWORD')
+MONGODB_HOSTNAME = os.environ.get('MONGODB_HOSTNAME')
+MONGODB_DATABASE = os.environ.get('MONGODB_DATABASE')
 
-# TODO: Add Weather Data Model
+app.config["MONGO_URI"] = f'mongodb://{MONGODB_USERNAME}:{MONGODB_PASSWORD}' \
+    '@{MONGODB_HOSTNAME}:27017/{MONGODB_DATABASE}'
 
-# TODO: Add Endpoints for creating weather data rows.
-
-
-class WeatherMeasurement(db.Document):
-    pass
-
-
-@app.route('/api/measurement', methods=['POST', 'DELETE'])
-def measurement(request):
-    if request.method == 'POST':
-        # Add measurement
-        pass
-    if request.method == 'DELETE':
-        # Delete measurement
-        pass
+# Instantiates the connection to the database.
+mongo = PyMongo(app)
+db = mongo.db
 
 
 @app.route('/')

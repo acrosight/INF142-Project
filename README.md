@@ -12,11 +12,19 @@ Mandatory assignment 2
 - WebServer for serving frontend and serving REST API for reading sensor data from MongoDB
 - Frontend with some simple Javascript code for fetching data from REST API
 
-## Getting started
+## Getting started with web-server (local)
 
-1.  Install the required modules (in a virtualenv) by running
+1.  Run the following command in the root folder:
+
     `pip install -r requirements.txt`.
 
-2.  Start MongoDB from command line by running `mongo` (Requires that MongoDB is installed).
+2.  Set up a .env file with the following variables in the web-server folder:
 
-3.  Start the web server by running server.py in the web-server folder.
+    - APP_PORT
+    - MONGODB_DATABASE
+    - MONGODB_USERNAME
+    - MONGODB_PASSWORD
+    - MONGODB_HOSTNAME
+
+3.  Run the following command `python server.py` in the web-server folder to
+    start the server.
