@@ -1,4 +1,4 @@
-from pymongo import mongoLibrary,MongoClient
+from pymongo import MongoClient
 from selectors import DefaultSelector, EVENT_READ
 from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM
 import sys
@@ -12,21 +12,22 @@ class Server:
 
     def __init__(self, host, port, server_type):
 
-        if server_type =="TCP":
-            self._sock = socket(AF_INET, SOCK_DGRAM)
-            self._sock.bind(host, port)
-            self._sock.listen(100)
-        elif server_type == "UDP":
+        if server_type.upper() =="TCP":
             self._sock = socket(AF_INET, SOCK_STREAM)
-            self._sock.bind(host, port)
+            self._sock.bind((host, port))
+            self._sock.listen(100)
+        elif server_type.upper() == "UDP":
+            self._sock = socket(AF_INET, SOCK_DGRAM)
+            self._sock.bind((host, port))
         
-        self._sock.setblocking(False)
+        # self._sock.setblocking(False)
         self._server_type = server_type
         self._BUFFER_SIZE = 2048
         self._sel = DefaultSelector()
         self._sel.register(self._sock, EVENT_READ, self._recieve)
 
     def turn_on(self, sock):
+        print("Turning on the server...")
         self._serving = True
         while self._serving:
             events = self._sel.select()
@@ -61,6 +62,7 @@ class Server:
         client = MongoClient(port=27017)
         db = client.weather
         # Creating sample from given data
+        print(data)
         for x in data:
             report = {
                 'rain': x['rain'],
@@ -69,10 +71,14 @@ class Server:
             }
             ## Insert report into db
             result = db.reviews.insert_one(report)
-
+        print(result)
         print("finished posting to MongoDB")
     
 
 if __name__ == "__main__":
-    server = Server('localhost', 5550, str(sys.argv))
-    server.turn_on(server)
+    udp_server = Server('localhost', 5550, 'UDP')
+    tcp_server = Server('localhost', 5550, 'TCP')
+    # server = Server('localhost', 5550, str(sys.argv))
+    # server.turn_on(server)
+    udp_server.turn_on(udp_server)
+    tcp_server.turn_on(tcp_server)
