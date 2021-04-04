@@ -4,7 +4,26 @@ from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM
 import random
 import json
 
+def tcp_client(data):
+    print("sending with tcp")
+    socket_type = SOCK_STREAM
+    sock = socket()
 
+    sock.connect((address, port))
+    sock.sendall(data.encode)
+    server_answer = sock.recv(2048).decode()
+    print(f"Answer from the server: {server_answer}")
+    sock.close()
+
+
+def udp_client(data):
+    print("sending with udp")
+    socket_type = SOCK_DGRAM
+    sock = socket(address_fam, socket_type)
+
+    data_encoded = data.encode()
+    sock.sendto(data_encoded, (address, port))
+    
 if __name__ == "__main__":
 
     # Instantiate a station simulator
@@ -18,25 +37,6 @@ if __name__ == "__main__":
     address = "localhost"
     port = 5555
     rand = random.randint(0, 1)
-
-
-def tcp_client(data):
-    socket_type = SOCK_STREAM
-    sock = socket()
-
-    sock.connect(address)
-    sock.sendall(data.encode)
-    server_answer = sock.recv(2048).decode()
-    print(f"Answer from the server: {server_answer}")
-    sock.close()
-
-
-def udp_client(data):
-    socket_type = SOCK_DGRAM
-    sock = socket(address_fam, socket_type)
-
-    data_encoded = data.encode()
-    sock.sendto(data_encoded, (address, port))
 
     while (True):
         # Sleep for 5 second to wait for new weather data
@@ -57,3 +57,8 @@ def udp_client(data):
 
     # Shut down the simulation
     bergen_station.shut_down()
+
+
+
+
+
