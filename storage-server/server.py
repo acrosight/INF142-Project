@@ -77,7 +77,7 @@ class Server:
 
 if __name__ == "__main__":
     udp_server = Server('localhost', 5550, 'UDP')
-    tcp_server = Server('localhost', 5550, 'TCP')
+    tcp_server = Server('localhost', 5555, 'TCP')
     # server = Server('localhost', 5550, str(sys.argv))
     # server.turn_on(server)
     udp_server.turn_on(udp_server)
