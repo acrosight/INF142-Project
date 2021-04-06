@@ -52,9 +52,9 @@ if __name__ == "__main__":
         latest_data = json.dumps(
             {"temperature": temperature, "precipitation": precipitation, "location": location})
 
-        port = 5555
-        tcp_client(latest_data)
-        
+        port = 5550
+        udp_client(latest_data)
+
         break
 
         # if (rand):  # Randomly decide tcp or upd client

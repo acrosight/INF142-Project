@@ -3,11 +3,19 @@ from pymongo import MongoClient
 from selectors import DefaultSelector, EVENT_READ
 from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM
 import sys
+import os
 
 # Listen for TCP and UDP connections
 
 # On new data from stations, write data to mongodb
+# Retrieves the variables necessary to assemble the MONGO URI
+MONGODB_USERNAME = os.environ.get('MONGODB_USERNAME')
+MONGODB_PASSWORD = os.environ.get('MONGODB_PASSWORD')
+MONGODB_HOSTNAME = os.environ.get('MONGODB_HOSTNAME')
+MONGODB_DATABASE = os.environ.get('MONGODB_DATABASE')
 
+mongodb = f'mongodb://{MONGODB_USERNAME}:{MONGODB_PASSWORD}' \
+        '@{MONGODB_HOSTNAME}:27017/{MONGODB_DATABASE}'
 
 class Server:
 
@@ -54,18 +62,17 @@ class Server:
 
         if data:
             info = data.decode()
-
             ## Do something about the data recieved
             self.postToDB(info)
         else:
             self._sel.unregister(sock)
             conn.close()
-
+        
     # Connect 
     def postToDB(self, data):
         # Connecting to MongoDB
         print("Connecting to MongoDB")
-        client = MongoClient(port=27017)
+        client = MongoClient(mongodb)
         db = client.weather
         # Creating sample from given data
         x = json.loads(data)
@@ -77,17 +84,17 @@ class Server:
             'location': x['location'],
         }
         print(report)
-
         ## Insert report into db
-        # result = db.reviews.insert_one(x)
-        # print(result)
+        result = db.reviews.insert_one(x)
+        print(result)
         print("finished posting to MongoDB")
+        return
     
 
 if __name__ == "__main__":
-    #udp_server = Server('localhost', 5550, 'UDP')
+    udp_server = Server('localhost', 5550, 'UDP')
     tcp_server = Server('localhost', 5555, 'TCP')
     # server = Server('localhost', 5550, str(sys.argv))
     # server.turn_on(server)
-    #udp_server.turn_on(udp_server)
+    udp_server.turn_on(udp_server)
     tcp_server.turn_on(tcp_server)
