@@ -28,3 +28,9 @@ Mandatory assignment 2
 
 3.  Run the following command `python server.py` in the web-server folder to
     start the server.
+
+## Run all containers:
+
+1. `docker-compose up`
+2. Visit `localhost:5000` in browser
+3. Success

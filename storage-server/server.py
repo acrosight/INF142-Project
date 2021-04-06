@@ -14,7 +14,7 @@ MONGODB_USERNAME = os.environ.get('MONGODB_USERNAME', "root")
 MONGODB_PASSWORD = os.environ.get('MONGODB_PASSWORD', "example")
 MONGODB_HOSTNAME = os.environ.get('MONGODB_HOSTNAME', "localhost")
 MONGODB_DATABASE = os.environ.get('MONGODB_DATABASE', "weatherstation")
-MONGODB_COLLECTION = "sensorData"
+MONGODB_COLLECTION = os.environ.get('MONGODB_COLLECTION', "sensorData")
 SERVER_TYPE = os.environ.get('SERVER_TYPE')
 
 MONGODB_CONNECTIONSTRING = f'mongodb://{MONGODB_USERNAME}:{MONGODB_PASSWORD}@{MONGODB_HOSTNAME}:27017'
@@ -60,7 +60,7 @@ class Server:
     def _recieve(self, sock, mask):
         if self._server_type == "TCP":
             print('TCP recv')
-            conn,_ = sock.accept()
+            conn, _ = sock.accept()
             conn.setblocking(False)
             data = conn.recv(self._BUFFER_SIZE)
             # For debugging purposes,
@@ -106,5 +106,6 @@ class Server:
 
 
 if __name__ == "__main__":
+    print("Storage server starting", SERVER_TYPE)
     server = Server(SERVER_TYPE)
     server.turn_on()

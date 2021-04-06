@@ -29,13 +29,17 @@ def udp_client(data):
 
 
 if __name__ == "__main__":
-
+    print("Station client started")
     # Instantiate a station simulator
-    bergen_station = StationSimulator(simulation_interval=1)
+    cities = ["Alta","Arendal","Askim","Bergen","Bodø","Brekstad","Brevik","Brumunddal","Bryne","Brønnøysund","Drammen","Drøbak","Egersund","Elverum","Fagernes","Farsund","Fauske","Finnsnes","Flekkefjord","Florø","Fosnavåg","Fredrikstad","Førde","Gjøvik","Grimstad","Halden","Hamar","Hammerfest","Harstad","Haugesund","Hokksund","Holmestrand","Honningsvåg","Horten","Hønefoss","Jessheim","Jørpeland","Kirkenes","Kolvereid","Kongsberg","Kongsvinger","Kopervik","Kragerø","Kristiansand","Kristiansund","Langesund","Larvik","Leknes","Levanger","Lillehammer","Lillesand","Lillestrøm","Lyngdal","Mandal","Mo i Rana","Moelv","Molde","Mosjøen","Moss","Mysen","Måløy","Namsos","Narvik","Notodden","Odda","Orkanger","Oslo","Otta","Porsgrunn","Raufoss","Risør","Rjukan","Røros","Sandefjord","Sandnes","Sandnessjøen","Sandvika","Sarpsborg","Sauda","Ski","Skien","Skudeneshavn","Sortland","Stathelle","Stavanger","Stavern","Steinkjer","Stjørdalshalsen","Stokmarknes","Stord","Svelvik","Svolvær","Tromsø","Trondheim","Tvedestrand","Tønsberg","Ulsteinvik","Vadsø","Vardø","Verdalsøra","Vinstra","Åkrehamn","Ålesund","Åndalsnes","Åsgårdstrand"]
+    
+    curr_location = cities[random.randint(0, len(cities))]
+    
+    station = StationSimulator(location = curr_location, simulation_interval=1)
     # Turn on the simulator
-    bergen_station.turn_on()
+    station.turn_on()
 
-    location = bergen_station.location
+    location = station.location
 
     address_fam = AF_INET
     address = "localhost"
@@ -46,8 +50,8 @@ if __name__ == "__main__":
             # to be simulated
             sleep(5)
             # Read new weather data
-            temperature = bergen_station.temperature
-            precipitation = bergen_station.rain
+            temperature = station.temperature
+            precipitation = station.rain
 
             # Package data as json_string
             latest_data = json.dumps(
@@ -67,4 +71,4 @@ if __name__ == "__main__":
         print("Breaking due to keyboard interrupt")
 
     # Shut down the simulation
-    bergen_station.shut_down()
+    station.shut_down()

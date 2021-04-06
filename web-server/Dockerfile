@@ -1,11 +1,11 @@
-# first stage
+# Builder stage
 FROM python:3.8 AS builder
 COPY requirements.txt .
 
 # Install the required modules.
 RUN pip install --user -r requirements.txt
 
-# second unnamed stage
+# Publish stage
 FROM python:3.8-slim AS publish 
 WORKDIR /code
 
@@ -13,7 +13,7 @@ WORKDIR /code
 COPY --from=builder /root/.local /root/.local
 COPY . .
 
-# update PATH environment variable
+# update PATH environment variable for pip packages
 ENV PATH=/root/.local:$PATH
 
 
