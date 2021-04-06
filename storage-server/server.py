@@ -1,8 +1,6 @@
 import json
-import time
 from pymongo import MongoClient
 from selectors import DefaultSelector, EVENT_READ
-from threading import Thread
 from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM
 import os
 
@@ -37,14 +35,14 @@ def add_data_to_db(data: str):
         'temperature': x['temperature'],
         'precipitation': x['precipitation'],
         'location': x['location'],
-        'timestamp': time.time(),
+        'timestamp': x['timestamp'],
     }
     print(report)
     # Insert report into db
     try:
         result = mycol.insert_one(x)
         print(result)
-        print("finished inserting document to MongoDB")
+        print("finished inserting to MongoDB")
     except Exception as e:
         print("Failed to insert ", e)
 

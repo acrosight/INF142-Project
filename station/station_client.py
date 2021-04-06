@@ -1,5 +1,6 @@
 import os
 from time import sleep
+import time
 from station import StationSimulator
 from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM
 import random
@@ -60,7 +61,12 @@ if __name__ == "__main__":
 
             # Package data as json_string
             latest_data = json.dumps(
-                {"temperature": temperature, "precipitation": precipitation, "location": location})
+                {
+                    "temperature": temperature,
+                    "precipitation": precipitation,
+                    "location": location,
+                    'timestamp': time.time()
+                })
 
             # Randomly use tcp or udp to send package
             rand = random.randint(0, 1)
