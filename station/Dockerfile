@@ -17,5 +17,5 @@ COPY . .
 ENV PATH=/root/.local:$PATH
 
 
-CMD ["python", "./station_client.py"]
+CMD ["python", "-u", "./station_client.py"]
 

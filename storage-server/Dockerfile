@@ -16,4 +16,4 @@ COPY . .
 # update PATH environment variable
 ENV PATH=/root/.local:$PATH
 
-CMD [ "python", "./server.py" ]
+CMD [ "python", "-u", "./server.py" ]

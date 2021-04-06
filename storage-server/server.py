@@ -1,9 +1,9 @@
 import json
+import time
 from pymongo import MongoClient
 from selectors import DefaultSelector, EVENT_READ
 from threading import Thread
 from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM
-import sys
 import os
 
 # Listen for TCP and UDP connections
@@ -21,20 +21,50 @@ MONGODB_CONNECTIONSTRING = f'mongodb://{MONGODB_USERNAME}:{MONGODB_PASSWORD}@{MO
 print(MONGODB_CONNECTIONSTRING)
 
 
+def add_data_to_db(data: str):
+    '''
+    Add data to mongodb collection, data must be serializeable to a dictionary
+    '''
+    # Connecting to MongoDB
+    print("Connecting to MongoDB")
+    mydb = MongoClient(MONGODB_CONNECTIONSTRING)[MONGODB_DATABASE]
+    mycol = mydb[MONGODB_COLLECTION]
+    # Parse data from string to dictionary
+    x = json.loads(data)
+    print(x)
+
+    report = {
+        'temperature': x['temperature'],
+        'precipitation': x['precipitation'],
+        'location': x['location'],
+        'timestamp': time.time(),
+    }
+    print(report)
+    # Insert report into db
+    try:
+        result = mycol.insert_one(x)
+        print(result)
+        print("finished inserting document to MongoDB")
+    except Exception as e:
+        print("Failed to insert ", e)
+
+
 class Server:
+    '''
+    General connection server for either udp or tcp connections.
+    '''
 
     def __init__(self, server_type):
-
         if server_type.upper() == "TCP":
             print("Starting TCP server")
             self._sock = socket(AF_INET, SOCK_STREAM)
-            self._sock.bind(('localhost', 5555))
+            self._sock.bind(('0.0.0.0', 5555))
             self._sock.listen(100)
             self._sock.setblocking(False)
         elif server_type.upper() == "UDP":
             print("Starting UDP server")
             self._sock = socket(AF_INET, SOCK_DGRAM)
-            self._sock.bind(('localhost', 5550))
+            self._sock.bind(('0.0.0.0', 5550))
 
         self._sock.setblocking(False)
         self._server_type = server_type
@@ -73,36 +103,12 @@ class Server:
             info = data.decode()
             # Do something about the data recieved
             try:
-                self.postToDB(info)
+                add_data_to_db(info)
             except Exception as e:
                 print("Failed to insert to mongodb", e)
         else:
             self._sel.unregister(sock)
             conn.close()
-
-    # Connect
-    def postToDB(self, data):
-        # Connecting to MongoDB
-        print("Connecting to MongoDB")
-        mydb = MongoClient(MONGODB_CONNECTIONSTRING)[MONGODB_DATABASE]
-        mycol = mydb[MONGODB_COLLECTION]
-        # Creating sample from given data
-        x = json.loads(data)
-        print(x)
-
-        report = {
-            'temperature': x['temperature'],
-            'precipitation': x['precipitation'],
-            'location': x['location'],
-        }
-        print(report)
-        # Insert report into db
-        try:
-            result = mycol.insert_one(x)
-            print(result)
-            print("finished posting to MongoDB")
-        except Exception as e:
-            print("Failed to insert ", e)
 
 
 if __name__ == "__main__":
