@@ -3,14 +3,16 @@ from station import StationSimulator
 from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM
 import random
 import json
+import sys
 
 def tcp_client(data):
     print("sending with tcp")
     socket_type = SOCK_STREAM
     sock = socket()
-
+    
     sock.connect((address, port))
-    sock.sendall(data.encode)
+    print(f'Sending data {data}')
+    sock.send(data.encode())
     server_answer = sock.recv(2048).decode()
     print(f"Answer from the server: {server_answer}")
     sock.close()
@@ -21,8 +23,9 @@ def udp_client(data):
     socket_type = SOCK_DGRAM
     sock = socket(address_fam, socket_type)
 
-    data_encoded = data.encode()
-    sock.sendto(data_encoded, (address, port))
+
+    print(f'Sending data {data}')
+    sock.sendto(data.encode(), (address, port))
     
 if __name__ == "__main__":
 
@@ -49,12 +52,18 @@ if __name__ == "__main__":
         latest_data = json.dumps(
             {"temperature": temperature, "precipitation": precipitation, "location": location})
 
-        if (rand):  # Randomly decide tcp or upd client
-            port = 5555
-            tcp_client(latest_data)
-        else:
-            port = 5550
-            udp_client(latest_data)
+        port = 5555
+        tcp_client(latest_data)
+        
+        break
+
+        # if (rand):  # Randomly decide tcp or upd client
+        #     port = 5555
+        #     tcp_client(latest_data)
+        # else:
+        #     port = 5550
+        #     udp_client(latest_data)
+        # break
 
     # Shut down the simulation
     bergen_station.shut_down()
