@@ -17,15 +17,17 @@ else:
     MONGODB_PASSWORD = os.environ.get('MONGODB_PASSWORD')
     MONGODB_HOSTNAME = os.environ.get('MONGODB_HOSTNAME')
     MONGODB_DATABASE = os.environ.get('MONGODB_DATABASE')
+    MONGODB_COLLECTION = os.environ.get('MONGODB_DATABASE')
     URI = f'mongodb://{MONGODB_USERNAME}:{MONGODB_PASSWORD}' \
     '@{MONGODB_HOSTNAME}:27017/{MONGODB_DATABASE}'
     client = MongoClient(URI)
 
-db = client.weatherstation
+db = client[MONGODB_COLLECTION]
+
 
 @app.route('/')
 def home_page():
-    weather_data = list(db.weather.find({}))
+    weather_data = list(db[MONGODB_COLLECTION].find({}))
     return render_template('index.html', weather_data=weather_data)
 
 if __name__ == '__main__':
