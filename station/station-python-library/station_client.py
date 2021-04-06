@@ -35,7 +35,6 @@ if __name__ == "__main__":
 
     address_fam = AF_INET
     address = "localhost"
-    port = 5555
     rand = random.randint(0, 1)
 
     while (True):
@@ -51,8 +50,10 @@ if __name__ == "__main__":
             {"temperature": temperature, "precipitation": precipitation, "location": location})
 
         if (rand):  # Randomly decide tcp or upd client
+            port = 5555
             tcp_client(latest_data)
         else:
+            port = 5550
             udp_client(latest_data)
 
     # Shut down the simulation
