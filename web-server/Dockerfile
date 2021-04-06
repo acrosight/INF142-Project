@@ -3,7 +3,7 @@ FROM python:3.8 AS builder
 COPY requirements.txt .
 
 # Install the required modules.
-RUN pip install -r requirements.txt
+RUN pip install --user -r requirements.txt
 
 # Publish stage
 FROM python:3.8-slim AS publish
@@ -16,5 +16,4 @@ COPY . .
 ENV PATH=/root/.local:$PATH
 
 
-CMD ["python", "web-server.py"]
-
+CMD ["python", "./server.py"]
