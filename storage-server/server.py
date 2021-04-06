@@ -27,6 +27,7 @@ class Server:
             self._sock = socket(AF_INET, SOCK_STREAM)
             self._sock.bind(('localhost', 5555))
             self._sock.listen(100)
+            self._sock.setblocking(False)
         elif server_type.upper() == "UDP":
             print("Starting UDP server")
             self._sock = socket(AF_INET, SOCK_DGRAM)
@@ -53,6 +54,7 @@ class Server:
         if self._server_type == "TCP":
             print('TCP recv')
             conn,_ = sock.accept()
+            conn.setblocking(False)
             data = conn.recv(self._BUFFER_SIZE)
             ## For debugging purposes,
             conn.sendall("TCP data recived".encode())
