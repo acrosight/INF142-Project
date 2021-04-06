@@ -32,6 +32,7 @@ services:
       MONGODB_USERNAME: root
       MONGODB_PASSWORD: example
       MONGODB_HOSTNAME: mongo
+      MONGODB_DATABASE: sensorData
     depends_on:
       - mongo
 
