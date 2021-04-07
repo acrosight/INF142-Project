@@ -13,7 +13,7 @@ MONGODB_PASSWORD = os.environ.get('MONGODB_PASSWORD', "example")
 MONGODB_HOSTNAME = os.environ.get('MONGODB_HOSTNAME', "localhost")
 MONGODB_DATABASE = os.environ.get('MONGODB_DATABASE', "weatherstation")
 MONGODB_COLLECTION = os.environ.get('MONGODB_COLLECTION', "sensorData")
-SERVER_TYPE = os.environ.get('SERVER_TYPE')
+SERVER_TYPE = os.environ.get('SERVER_TYPE', 'UDP')
 
 MONGODB_CONNECTIONSTRING = f'mongodb://{MONGODB_USERNAME}:{MONGODB_PASSWORD}@{MONGODB_HOSTNAME}:27017'
 print(MONGODB_CONNECTIONSTRING)
@@ -40,11 +40,11 @@ def add_data_to_db(data: str):
     print(report)
     # Insert report into db
     try:
-        result = mycol.insert_one(x)
-        print(result)
-        print("finished inserting to MongoDB")
+        mycol.insert_one(x)
     except Exception as e:
         print("Failed to insert ", e)
+    except KeyboardInterrupt:
+        print("Interrupted by user")
 
 
 class Server:

@@ -16,12 +16,6 @@
         <th scope="col">Temperature</th>
         <th scope="col">Precipitation</th>
         <th scope="col">Timestamp</th>
-        <!-- <th>Month</th>
-        <th>Avg high temp</th>
-        <th>Avg low temp</th>
-        <th>Avg Precipitation</th>
-        <th>Avg Precipitation Days</th>
-        <th>Simulation Interval</th> -->
       </thead>
       <tbody>
         {% for weather_measurement in weather_data %}
@@ -29,13 +23,7 @@
           <td>{{weather_measurement['location']}}</td>
           <td>{{weather_measurement['temperature']}}</td>
           <td>{{weather_measurement['precipitation']}}</td>
-          <td>{{weather_measurement['timestamp']}}</td>
-          <!-- <td>{{weather_measurement['month']}}</td>
-          <td>{{weather_measurement['avg_high_temp']}}</td>
-          <td>{{weather_measurement['avg_low_temp']}}</td>
-          <td>{{weather_measurement['avg_precipitation']}}</td>
-          <td>{{weather_measurement['avg_precipitation_days']}}</td>
-          <td>{{weather_measurement['simulation_interval']}}</td> -->
+          <td>{{weather_measurement['timestamp']|datetimeformat }}</td>
         </tr>
         {% endfor %}
       </tbody>

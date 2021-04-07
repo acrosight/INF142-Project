@@ -16,5 +16,4 @@ COPY . .
 # update PATH environment variable for pip packages
 ENV PATH=/root/.local:$PATH
 
-
 CMD ["python", "-u", "./server.py"]

@@ -52,9 +52,9 @@ if __name__ == "__main__":
 
     try:
         while (True):
+            sleep(5)
             # Sleep for 5 second to wait for new weather data
             # to be simulated
-            sleep(5)
             # Read new weather data
             temperature = station.temperature
             precipitation = station.rain

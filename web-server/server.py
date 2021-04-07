@@ -1,17 +1,18 @@
 import os
 
+from datetime import datetime
 from flask import Flask, render_template
 from pymongo import MongoClient, DESCENDING
 
 app = Flask(__name__)
 
-RUNNING_IN_DOCKER = True if os.environ.get('RUNNING_IN_DOCKER') else False
+RUNNING_IN_DOCKER = os.environ.get('RUNNING_IN_DOCKER', False)
 
-MONGODB_USERNAME = os.environ.get('MONGODB_USERNAME')
-MONGODB_PASSWORD = os.environ.get('MONGODB_PASSWORD')
-MONGODB_HOSTNAME = os.environ.get('MONGODB_HOSTNAME')
-MONGODB_DATABASE = os.environ.get('MONGODB_DATABASE')
-MONGODB_COLLECTION = os.environ.get('MONGODB_COLLECTION')
+MONGODB_USERNAME = os.environ.get('MONGODB_USERNAME', "root")
+MONGODB_PASSWORD = os.environ.get('MONGODB_PASSWORD', "example")
+MONGODB_HOSTNAME = os.environ.get('MONGODB_HOSTNAME', "localhost")
+MONGODB_DATABASE = os.environ.get('MONGODB_DATABASE', "weatherstation")
+MONGODB_COLLECTION = os.environ.get('MONGODB_COLLECTION', "sensorData")
 
 URI = 'mongodb://root:example@localhost:27017/'
 if RUNNING_IN_DOCKER:
@@ -22,11 +23,21 @@ client = MongoClient(URI)
 db = client[MONGODB_DATABASE]
 
 
+@app.template_filter('reverse')
+def datetimeformat(s):
+    dt_object = datetime.fromtimestamp(s)
+    date_time = dt_object.strftime("%d/%m/%Y, %H:%M")
+    return date_time
+
+
 @app.route('/')
 def home_page():
     weather_data = list(db[MONGODB_COLLECTION].find(
         {}).sort('timestamp', DESCENDING).limit(100))
     return render_template('index.html', weather_data=weather_data)
+
+
+app.jinja_env.filters['datetimeformat'] = datetimeformat
 
 
 if __name__ == '__main__':
