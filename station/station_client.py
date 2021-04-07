@@ -80,5 +80,6 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Breaking due to keyboard interrupt")
 
-    # Shut down the simulation
-    station.shut_down()
+    finally:
+        # Shut down the simulation
+        station.shut_down()
