@@ -28,19 +28,13 @@ def add_data_to_db(data: str):
     mydb = MongoClient(MONGODB_CONNECTIONSTRING)[MONGODB_DATABASE]
     mycol = mydb[MONGODB_COLLECTION]
     # Parse data from string to dictionary
-    x = json.loads(data)
-    print(x)
-
-    report = {
-        'temperature': x['temperature'],
-        'precipitation': x['precipitation'],
-        'location': x['location'],
-        'timestamp': x['timestamp'],
-    }
+    report = json.loads(data)
     print(report)
+
+
     # Insert report into db
     try:
-        mycol.insert_one(x)
+        mycol.insert_one(report)
     except Exception as e:
         print("Failed to insert ", e)
     except KeyboardInterrupt:
@@ -58,7 +52,6 @@ class Server:
             self._sock = socket(AF_INET, SOCK_STREAM)
             self._sock.bind(('0.0.0.0', 5555))
             self._sock.listen(100)
-            self._sock.setblocking(False)
         elif server_type.upper() == "UDP":
             print("Starting UDP server")
             self._sock = socket(AF_INET, SOCK_DGRAM)
@@ -66,7 +59,7 @@ class Server:
 
         self._sock.setblocking(False)
         self._server_type = server_type
-        self._BUFFER_SIZE = 16128
+        self._BUFFER_SIZE = 16384
         self._sel = DefaultSelector()
         self._sel.register(self._sock, EVENT_READ, self._recieve)
 
@@ -75,9 +68,10 @@ class Server:
         self._serving = True
         try:
             while self._serving:
-                events = self._sel.select()
+                events = self._sel.select() #BLOCKING
                 for key, mask in events:
-                    functions = key.data
+                    functions = key.data 
+                    # The function passed from the data is the function we earlier registered in the selector (_recieve)
                     functions(key.fileobj, mask)
         except KeyboardInterrupt:
             print("Breaking due to keyboard interrupt")
@@ -91,7 +85,7 @@ class Server:
             conn, _ = sock.accept()
             conn.setblocking(False)
             data = conn.recv(self._BUFFER_SIZE)
-            # For debugging purposes,
+            # For debugging purposes.
             conn.sendall("TCP data recived".encode())
         elif self._server_type == "UDP":
             print('UDP recv')
@@ -99,7 +93,7 @@ class Server:
 
         if data:
             info = data.decode()
-            # Do something about the data recieved
+            # Send the data recived to the database.
             try:
                 add_data_to_db(info)
             except Exception as e:
