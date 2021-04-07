@@ -23,7 +23,7 @@ client = MongoClient(URI)
 db = client[MONGODB_DATABASE]
 
 
-@app.template_filter('reverse')
+@app.template_filter('datetimeformat')
 def datetimeformat(s):
     dt_object = datetime.fromtimestamp(s)
     date_time = dt_object.strftime("%d/%m/%Y, %H:%M")
