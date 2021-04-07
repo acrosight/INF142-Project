@@ -1,6 +1,6 @@
 import os
 from time import sleep
-import time
+import datetime
 from station import StationSimulator
 from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM
 import random
@@ -52,9 +52,6 @@ if __name__ == "__main__":
 
     try:
         while (True):
-            sleep(5)
-            # Sleep for 5 second to wait for new weather data
-            # to be simulated
             # Read new weather data
             temperature = station.temperature
             precipitation = station.rain
@@ -65,7 +62,7 @@ if __name__ == "__main__":
                     "temperature": temperature,
                     "precipitation": precipitation,
                     "location": location,
-                    'timestamp': time.time()
+                    'timestamp': str(datetime.datetime.now())
                 })
 
             # Randomly use tcp or udp to send package
@@ -77,6 +74,10 @@ if __name__ == "__main__":
                     udp_client(latest_data)
             except Exception as e:
                 print("Unable to post data", e)
+
+            # Sleep for 5 second to wait for new weather data
+            # to be simulated
+            sleep(5)
     except KeyboardInterrupt:
         print("Breaking due to keyboard interrupt")
 

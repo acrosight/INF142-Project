@@ -5,30 +5,216 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Weather monitor</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.2/dist/chart.min.js"></script>
+    <style>
+      .flex-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+      }
+      .flex-col {
+        display: flex;
+        flex-direction: column;
+      }
+      .chart-area {
+        width: 40vw;
+      }
+    </style>
   </head>
   <body>
     <h1>Our weather station monitor</h1>
-    <button onClick="window.location.reload();">Get data</button>
-    <!-- TODO: Click on a tableRow and open a nice little graph using https://www.chartjs.org/  -->
-    <table>
-      <thead>
-        <th scope="col">Location</th>
-        <th scope="col">Temperature</th>
-        <th scope="col">Precipitation</th>
-        <th scope="col">Timestamp</th>
-      </thead>
-      <tbody>
-        {% for weather_measurement in weather_data %}
-        <tr>
-          <td>{{weather_measurement['location']}}</td>
-          <td>{{weather_measurement['temperature']}}</td>
-          <td>{{weather_measurement['precipitation']}}</td>
-          <td>{{weather_measurement['timestamp']|datetimeformat}}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="flex-row">
+      <div class="flex-col">
+        <h3>Latest 100 measurements (loaded on page load)</h3>
+        <table>
+          <thead>
+            <th scope="col">Location</th>
+            <th scope="col">Temperature</th>
+            <th scope="col">Precipitation</th>
+            <th scope="col">Timestamp</th>
+          </thead>
+          <tbody>
+            {% for weather_measurement in weather_data %}
+            <tr>
+              <td>{{weather_measurement['location']}}</td>
+              <td>{{weather_measurement['temperature']}}</td>
+              <td>{{weather_measurement['precipitation']}}</td>
+              <td>{{weather_measurement['timestamp']|datetimeformat}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="flex-col chart-area">
+        <h3>Chart area (loaded after page load)</h3>
+
+        <form id="getDataForLocationForm">
+          <select name="location" id="select-location"></select>
+          <input type="submit" value="Get data">
+        </form>
+        
+        <canvas id="myChart" width="600px" height="600px"></canvas>
+      </div>
+    </div>
     <script>
+      const ctx = document.getElementById('myChart').getContext('2d');
+
+      const locationFormSelect = document.getElementById('select-location');
+      const getDataForLocationForm = document.getElementById('getDataForLocationForm');
+
+      let weatherChart;
+      
+      /**
+       * Get a list of all locations in database
+       * @returns {string[]}
+       */
+      async function getLocations() {
+        const response = await fetch("/api/location", {
+          method: 'GET',
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.debug(data);
+          return data
+        } else {
+          console.debug("Error while fetching data", response.text());
+          return null;
+        }
+      }
+
+      /**
+       * @param {string[]} locations
+       */
+      function populateLocationsFormSelect(locations) {
+        console.debug(locations);
+        locations.forEach(location => {
+          locationFormSelect.innerHTML += `
+            <option value="${location}">${location}</option>
+          `;
+        });
+      }
+
+      /**
+       * Get weather data from flask rest api
+       * Not much logic, but it works
+       * @param {string | undefined} location
+       * @returns {WeatherData[]}
+       */
+      async function getWeatherData(location) {
+        let uri = "/api/data?limit=50";
+        if (location) {
+          uri += "&location=" + location;
+        }
+        const response = await fetch(uri, {
+          method: 'GET',
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.debug(data);
+          return data
+        } else {
+          console.debug("Error while fetching data", response.text());
+          return null;
+        }
+      }
+
+      /**
+       * Render chart
+       * @param {WeatherData[]} data
+       */
+      function renderChart(data) {
+        weatherChart = new Chart(ctx, {
+          type: 'line',
+          data: generateChartData(data),
+          options: {
+            scales: {
+              y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+              },
+              y1: {
+                display: true,
+                position: 'right',
+
+                // grid line settings
+                grid: {
+                  drawOnChartArea: false, // only want the grid lines for one axis to show up
+                },
+              },
+            },
+          },
+        })
+      }
+
+      /**
+       * Format dataset to fit chartjs
+       * @param {WeatherData[]} data
+       */
+      function generateChartData(data) {
+        return {
+              labels: data.map((d) => d.timestamp),
+              datasets: [
+                {
+                  label: 'Temperature',
+                  data: data.map((d) => d.temperature),
+                  borderColor: 'rgb(255, 99, 132)',
+                  tension: 0.1,
+                  fill: false,
+                  yAxisID: 'y',
+                }, {
+                  label: 'Precipitation',
+                  data: data.map((d) => d.precipitation),
+                  borderColor: 'rgb(54, 162, 235)',
+                  tension: 0.1,
+                  fill: false,
+                  yAxisID: 'y1',
+                },
+              ],
+          };
+      }
+      
+      /**
+       * Update chart
+       * @param {WeatherData[]} data
+       */
+      function updateChart(data) {
+        console.debug("Update chart", weatherChart, data);
+        weatherChart.data = generateChartData(data);
+        weatherChart.update();
+      }
+
+      /**
+       * @param {Event} e
+       */
+      async function getChartDataFormSubmit(e) {
+        e.preventDefault();
+
+        const location = e.target.location.value;
+        const data = await getWeatherData(location);
+        updateChart(data);
+      }
+
+      // When website loads for the first time:
+      // Get all available locations and render data
+      window.onload = async () => {
+        const locations = await getLocations();
+        populateLocationsFormSelect(locations);
+        const data = await getWeatherData(locations[0]);
+        
+        renderChart(data);
+
+
+        getDataForLocationForm.addEventListener('submit', getChartDataFormSubmit);
+      }
+
+      /**
+       * @typedef {Object} WeatherData
+       * @prop {String} location
+       * @prop {Number} precipitation
+       * @prop {Number} temperature
+       * @prop {String} timestamp
+       */
     </script>
   </body>
 </html>
