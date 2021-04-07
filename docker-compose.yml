@@ -20,7 +20,6 @@ services:
       - 5000:5000
     environment:
       APP_PORT: 5000
-      RUNNING_IN_DOCKER: "Yes"
       MONGODB_DATABASE: weatherstation
       MONGODB_USERNAME: root
       MONGODB_PASSWORD: example

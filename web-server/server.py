@@ -6,7 +6,6 @@ from pymongo import MongoClient, DESCENDING
 
 app = Flask(__name__)
 
-RUNNING_IN_DOCKER = os.environ.get('RUNNING_IN_DOCKER', False)
 
 MONGODB_USERNAME = os.environ.get('MONGODB_USERNAME', "root")
 MONGODB_PASSWORD = os.environ.get('MONGODB_PASSWORD', "example")
@@ -14,14 +13,11 @@ MONGODB_HOSTNAME = os.environ.get('MONGODB_HOSTNAME', "localhost")
 MONGODB_DATABASE = os.environ.get('MONGODB_DATABASE', "weatherstation")
 MONGODB_COLLECTION = os.environ.get('MONGODB_COLLECTION', "sensorData")
 
-URI = 'mongodb://root:example@localhost:27017/'
-if RUNNING_IN_DOCKER:
-    # Retrieves the variables necessary to assemble the MONGO URI
-    URI = f'mongodb://{MONGODB_USERNAME}:{MONGODB_PASSWORD}@{MONGODB_HOSTNAME}:27017'
+# Retrieves the variables necessary to assemble the MONGO URI
+URI = f'mongodb://{MONGODB_USERNAME}:{MONGODB_PASSWORD}@{MONGODB_HOSTNAME}:27017'
 
 client = MongoClient(URI)
 db = client[MONGODB_DATABASE]
-
 
 @app.template_filter('datetimeformat')
 def datetimeformat(s):
@@ -33,7 +29,7 @@ def datetimeformat(s):
 @app.route('/')
 def home_page():
     weather_data = list(db[MONGODB_COLLECTION].find(
-        {}).sort('timestamp', DESCENDING).limit(100))
+        {}).sort('timestamp', DESCENDING))
     return render_template('index.html', weather_data=weather_data)
 
 
