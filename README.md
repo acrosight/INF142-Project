@@ -1,4 +1,4 @@
-# INF142-Project
+# INF142-Project - Group 31
 
 Mandatory assignment 2
 
