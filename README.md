@@ -1,6 +1,6 @@
 # INF142-Project - Group 31
 
-Mandatory assignment 2
+Mandatory assignment 2 - Group 31
 
 ## Proposal
 
